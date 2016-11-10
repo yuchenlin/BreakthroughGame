@@ -6,6 +6,9 @@ from model import *
 from alpha_beta_agent import *
 import time
 
+def floorI(a):
+    return int(math.floor(a))
+
 class BreakthroughGame:
     def __init__(self):
         pygame.init()
@@ -61,30 +64,31 @@ class BreakthroughGame:
 
         # clear the screen
         self.screen.fill([255, 255, 255])
+        self.display()
 
-
-        if self.status == 5:
-            # Black
-            if self.turn == 1:
-                start = time.clock()
-                self.ai_move(2, 2)
-                self.total_time_1 += (time.clock() - start)
-                self.total_step_1 += 1
-                print('total_step_1 = ', self.total_step_1,
-                      'total_nodes_1 = ', self.total_nodes_1,
-                      'node_per_move_1 = ', self.total_nodes_1 / self.total_step_1,
-                      'time_per_move_1 = ', self.total_time_1 / self.total_step_1,
-                      'have_eaten = ', self.eat_piece)
-            elif self.turn == 2:
-                start = time.clock()
-                self.ai_move(2, 2)
-                self.total_time_2 += (time.clock() - start)
-                self.total_step_2 += 1
-                print('total_step_2 = ', self.total_step_2,
-                      'total_nodes_2 = ', self.total_nodes_2,
-                      'node_per_move_2 = ', self.total_nodes_2 / self.total_step_2,
-                      'time_per_move_2 = ', self.total_time_2 / self.total_step_2,
-                      'have_eaten: ', self.eat_piece)
+        # if self.status == 5:
+        #     # Black
+        if self.turn == 1:
+            start = time.clock()
+            self.ai_move(2, 2)
+            self.total_time_1 += (time.clock() - start)
+            self.total_step_1 += 1
+            print('total_step_1 = ', self.total_step_1,
+                  'total_nodes_1 = ', self.total_nodes_1,
+                  'node_per_move_1 = ', self.total_nodes_1 / self.total_step_1,
+                  'time_per_move_1 = ', self.total_time_1 / self.total_step_1,
+                  'have_eaten = ', self.eat_piece)
+        
+        #if self.turn == 2:
+        #     start = time.clock()
+        #     self.ai_move(2, 2)
+        #     self.total_time_2 += (time.clock() - start)
+        #     self.total_step_2 += 1
+        #     print('total_step_2 = ', self.total_step_2,
+        #           'total_nodes_2 = ', self.total_nodes_2,
+        #           'node_per_move_2 = ', self.total_nodes_2 / self.total_step_2,
+        #           'time_per_move_2 = ', self.total_time_2 / self.total_step_2,
+        #           'have_eaten: ', self.eat_piece)
 
         # Events accepting
         for event in pygame.event.get():
@@ -115,17 +119,17 @@ class BreakthroughGame:
             # select chess
             elif event.type == pygame.MOUSEBUTTONDOWN and self.status == 0:
                 x, y = event.pos
-                coor_y = math.floor(x / self.sizeofcell)
-                coor_x = math.floor(y / self.sizeofcell)
+                coor_y = floorI(x / self.sizeofcell)
+                coor_x = floorI(y / self.sizeofcell)
                 if self.boardmatrix[coor_x][coor_y] == self.turn:
                     self.status = 1
-                    self.ori_y = math.floor(x / self.sizeofcell)
-                    self.ori_x = math.floor(y / self.sizeofcell)
+                    self.ori_y = floorI(x / self.sizeofcell)
+                    self.ori_x = floorI(y / self.sizeofcell)
             # check whether the selected chess can move, otherwise select other chess
             elif event.type == pygame.MOUSEBUTTONDOWN and self.status == 1:
                 x, y = event.pos
-                self.new_y = math.floor(x / self.sizeofcell)
-                self.new_x = math.floor(y / self.sizeofcell)
+                self.new_y = floorI(x / self.sizeofcell)
+                self.new_x = floorI(y / self.sizeofcell)
                 if self.isabletomove():
                     self.movechess()
                     if (self.new_x == 7 and self.boardmatrix[self.new_x][self.new_y] == 1) \
@@ -141,7 +145,7 @@ class BreakthroughGame:
 
     # load the graphics and rescale them
     def initgraphics(self):
-        self.board = pygame.image.load_extended(os.path.join('src', 'chessboard.jpg'))
+        self.board = pygame.image.load_extended(os.path.join('src', 'chessboard.png'))
         self.board = pygame.transform.scale(self.board, (560, 560))
         self.blackchess = pygame.image.load_extended(os.path.join('src', 'blackchess.png'))
         self.blackchess = pygame.transform.scale(self.blackchess, (self.sizeofcell- 20, self.sizeofcell - 20))
@@ -149,14 +153,14 @@ class BreakthroughGame:
         self.whitechess = pygame.transform.scale(self.whitechess, (self.sizeofcell - 20, self.sizeofcell - 20))
         self.outline = pygame.image.load_extended(os.path.join('src', 'square-outline.png'))
         self.outline = pygame.transform.scale(self.outline, (self.sizeofcell, self.sizeofcell))
-        self.reset = pygame.image.load_extended(os.path.join('src', 'reset.jpg'))
+        self.reset = pygame.image.load_extended(os.path.join('src', 'reset.png'))
         self.reset = pygame.transform.scale(self.reset, (80, 80))
         self.winner = pygame.image.load_extended(os.path.join('src', 'winner.png'))
-        self.winner = pygame.transform.scale(self.winner, (250, 250))
+        self.winner = pygame.transform.scale(self.winner, (0, 0))
         self.computer = pygame.image.load_extended(os.path.join('src', 'computer.png'))
         self.computer = pygame.transform.scale(self.computer, (80, 80))
         self.auto = pygame.image.load_extended(os.path.join('src', 'auto.png'))
-        self.auto = pygame.transform.scale(self.auto, (80, 80))
+        self.auto = pygame.transform.scale(self.auto, (0, 0))
 
     # display the graphics in the window
     def display(self):
